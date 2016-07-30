@@ -2,15 +2,25 @@
 require 'mechanize'
 require 'json'
 
-#Build our initial array of all quotes from the web
-def build_quote_array
-  a = Mechanize.new
-  base_url = "https://www.goodreads.com/author/quotes/24956.Dorothy_Parker?page="
-  page_count = 8
-  all_quotes = []
+# Get an array of pages with quotes on the page.
+def get_pages(count, page_array)
+  scraper = Mechanize.new
+  base_url = "https://www.goodreads.com/author/quotes/24956.Dorothy_Parker?page=#{count}"
+  page = scraper.get(base_url)
+  if !page.search('div.quoteText').empty?
+    page_array.push(page)
+    count += 1
+    get_pages(count, page_array)
+  else
+    puts "Found #{page_array.length} pages of Dorothy Parker quotes."
+  end
+  return page_array
+end
 
-  for i in 1..page_count do
-    page = a.get(base_url + i.to_s)
+#Build our initial array of all quotes from the web
+def build_quote_array(page_array)
+  all_quotes = []
+  page_array.map do |page|
     page_quotes = page.search('div.quoteText').map {|x| x.text.gsub(/\n/,"").gsub(/Dorothy.*/, "").gsub(/”.*|^.*“/, "")}
     all_quotes = all_quotes + page_quotes
   end
@@ -38,7 +48,8 @@ end
 
 #Runtime. Will only run if script called directly and not required
 if __FILE__ == $0
-  all_quotes = build_quote_array
+  page_array = get_pages(1, [])
+  all_quotes = build_quote_array(page_array)
   tweet_quotes = remove_long_quotes(all_quotes)
   quote_hash = build_hash(tweet_quotes)
   write_hash_to_file(quote_hash, File.expand_path(File.dirname(__FILE__)) + '/quotes.json')
