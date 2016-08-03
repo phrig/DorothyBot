@@ -4,6 +4,8 @@ require 'json'
 
 # Get an array of pages with quotes on the page.
 def get_pages(count, page_array)
+  count ||= 1
+  page_array ||= []
   scraper = Mechanize.new
   base_url = "https://www.goodreads.com/author/quotes/24956.Dorothy_Parker?page=#{count}"
   page = scraper.get(base_url)
