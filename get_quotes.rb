@@ -60,7 +60,7 @@ def run_get_quotes
   all_quotes = build_quote_array(page_array)
   tweet_quotes = remove_long_quotes(all_quotes)
   quote_hash = build_hash(tweet_quotes)
-  write_hash_to_file(quote_hash, __dir__ + QUOTES_FILE_PATH)
+  write_hash_to_file(quote_hash, QUOTES_FILE_PATH)
 end
 
 if __FILE__ == $PROGRAM_NAME
