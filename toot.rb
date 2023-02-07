@@ -68,17 +68,23 @@ def toot_msg(msg)
   end
 end
 
-### runtime
-begin
-  run_get_quotes
-rescue StandardError => e
-  puts "Error generating quotes file: #{e.message}"
+def runtime
+  begin
+    run_get_quotes
+  rescue StandardError => e
+    puts "Error generating quotes file: #{e.message}"
+  end
+
+  if File.exist? QUOTES_FILE_PATH
+    puts 'quotes file found, sending messages'
+    new_quote = get_random_quote(QUOTES_FILE_PATH)
+    puts "our new quote is: #{new_quote}"
+    toot_msg(new_quote)
+    tweet_msg(new_quote)
+  else
+    puts 'Not quotes file found, doing nothing'
+  end
 end
 
-if File.exist? QUOTES_FILE_PATH
-  puts 'quotes file found, sending messages'
-  new_quote = get_random_quote(QUOTES_FILE_PATH)
-  puts "our new quote is: #{new_quote}"
-  toot_msg(new_quote)
-  tweet_msg(new_quote)
-end
+### runtime
+runtime if __FILE__ == $PROGRAM_NAME
