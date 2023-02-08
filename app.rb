@@ -1,6 +1,9 @@
+#!/usr/bin/env ruby
+# Lambda runtime script
+
 # frozen_string_literal: true
 
-require 'json'
+
 require_relative 'toot'
 
 def lambda_handler(event:, context:)

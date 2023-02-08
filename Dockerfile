@@ -1,4 +1,5 @@
 FROM public.ecr.aws/lambda/ruby:2.7
+# Install dependencies for nokogiri and other native extensions
 RUN yum install -y gcc-c++ make
 # Copy dependency management file
 COPY Gemfile ${LAMBDA_TASK_ROOT}
@@ -12,6 +13,5 @@ COPY app.rb ${LAMBDA_TASK_ROOT}
 COPY toot.rb ${LAMBDA_TASK_ROOT}
 COPY get_quotes.rb ${LAMBDA_TASK_ROOT}
 
-
-# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
+# Must match configuration in lambda
 CMD [ "app.lambda_handler"]"
