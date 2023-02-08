@@ -62,11 +62,12 @@ end
 def tweet_msg(msg)
   puts 'prepairing to tweet'
   begin
-    TWITTER_CLIENT.update(msg)
+    result = TWITTER_CLIENT.update(msg)
     puts 'tweet complete'
   rescue StandardError => e
     puts "Error tweeting: #{e.message}"
   end
+  result
 end
 
 def toot_msg(msg)
@@ -83,6 +84,7 @@ def toot_msg(msg)
   else
     puts "Toot unsuccessful #{res.response}"
   end
+  res
 end
 
 def runtime
@@ -92,16 +94,26 @@ def runtime
     puts "Error generating quotes file: #{e.message}"
   end
 
-  if File.exist? QUOTES_FILE_PATH
-    puts 'quotes file found, sending messages'
-    new_quote = get_random_quote(QUOTES_FILE_PATH)
-    puts "our new quote is: #{new_quote}"
-    toot_msg(new_quote)
-    tweet_msg(new_quote)
-  else
-    puts 'Not quotes file found, doing nothing'
+  unless File.exist? QUOTES_FILE_PATH
+    puts 'No quotes file found, doing nothing'
+    return { statusCode: 424, msg: 'No quote file found. Aborting', tweet_id: nil, toot_id: nil, quote: nil }
   end
+
+  puts 'quotes file found, sending messages'
+  new_quote = get_random_quote(QUOTES_FILE_PATH)
+  puts "our new quote is: #{new_quote}"
+  final_result = { quote: new_quote }
+  if MASTODON_ENABLED
+    toot_result = toot_msg(new_quote)
+    final_result[:toot_id] = toot_result['id'].to_s
+  end
+  if TWITTER_ENABLED
+    tweet_result = tweet_msg(new_quote)
+    final_result[:tweet_id] = tweet_result['id'].to_s
+  end
+  final_result[:msg] = 'Success'
+  final_result[:statusCode] = 200
+  final_result
 end
 
-### runtime
-runtime if __FILE__ == $PROGRAM_NAME
+puts runtime if __FILE__ == $PROGRAM_NAME
