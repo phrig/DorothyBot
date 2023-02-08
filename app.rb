@@ -3,7 +3,6 @@
 
 # frozen_string_literal: true
 
-
 require_relative 'toot'
 
 def lambda_handler(event:, context:)
