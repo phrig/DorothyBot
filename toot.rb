@@ -6,8 +6,25 @@ require_relative 'get_quotes'
 require 'twitter'
 require 'httparty'
 
+class String
+  def to_b
+    case downcase.strip
+    when 'true', 'yes', 'on', 't', '1', 'y', '=='
+      true
+    when 'nil', 'null'
+      nil
+    else
+      false
+    end
+  end
+end
+
+# Mastodon
+MASTODON_ENABLED = ENV['MASTODON_ENABLED'].to_b
 MASTODON_BASE_URL = ENV['MASTODON_BASE_URL']
 MASTODON_ACCESS_TOKEN = ENV['MASTODON_ACCESS_TOKEN']
+# Twitter
+TWITTER_ENABLED = ENV['TWITTER_ENABLED'].to_b
 TWITTER_CONSUMER_KEY        = ENV['TWITTER_CONSUMER_KEY']
 TWITTER_CONSUMER_SECRET     = ENV['TWITTER_CONSUMER_SECRET']
 TWITTER_ACCESS_TOKEN        = ENV['TWITTER_ACCESS_TOKEN']
