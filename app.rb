@@ -3,8 +3,13 @@
 
 # frozen_string_literal: true
 
+require 'json'
+require 'functions_framework'
 require_relative 'toot'
 
-def lambda_handler(event:, context:)
+FunctionsFramework.http('runtime') do |_request|
+  puts 'STARTING RUNTIME'
   runtime
+  puts 'ALL DONE'
+  { status: 200 }.to_json
 end
