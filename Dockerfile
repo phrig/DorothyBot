@@ -12,7 +12,7 @@ RUN apk --no-cache add $BUILD_PACKAGES $RUBY_PACKAGES
 
 
 WORKDIR /usr/src/app
-COPY Gemfile Gemfile.lock .
+COPY Gemfile Gemfile.lock ./
 ENV BUNDLE_FROZEN=true
 RUN gem install bundler && bundle config set --local without 'dev'
 RUN echo 'gem: --no-document' > /etc/gemrc
